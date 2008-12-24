@@ -91,18 +91,6 @@ fi
 CAMLLIBPATH=`$OCAMLC -where`
 
 AC_PROG_CC()
-PKG_PROG_PKG_CONFIG()
-
-# PKG_CHECK_MODULES loses when you need --libs-only-[lL]
-#if ! $PKG_CONFIG --exists theora; then
-#        AC_MSG_ERROR([libtheora not found])
-#fi
-#libtheora_CFLAGS=`$PKG_CONFIG --cflags theora`
-#AC_SUBST([libtheora_CFLAGS])
-#libtheora_LIBS=`$PKG_CONFIG --libs-only-l theora`
-#AC_SUBST([libtheora_LIBS])
-#libtheora_LDFLAGS=`$PKG_CONFIG --libs-only-L theora`
-#AC_SUBST([libtheora_LDFLAGS])
 
 if test "$OCAMLOPT" = no ; then
     BEST="byte"
