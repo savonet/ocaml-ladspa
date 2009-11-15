@@ -132,7 +132,7 @@ sig
 
   (** [instantiate descr freq len] instantiates the descriptor [descr] with a
     * sampling frequency [freq] indicating that [len] samples should be
-    * processed at each [run]. *)
+    * processed at each run. *)
   val instantiate : t -> int -> int -> instance
 
   (** Change the number of samples that should be processed at each [run]. *)
