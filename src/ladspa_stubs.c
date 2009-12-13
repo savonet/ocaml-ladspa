@@ -46,6 +46,7 @@
 #include <math.h>
 
 #include <ladspa.h>
+#include "ocaml_ladspa.h"
 
 #define Descr_val(v) ((LADSPA_Descriptor*)v)
 #define Val_descr(d) ((value)d)
@@ -278,18 +279,6 @@ CAMLprim value ocaml_ladspa_port_get_max(value d, value samplerate, value n)
 }
 
 /***** Instances ****/
-
-typedef struct
-{
-  LADSPA_Descriptor *descr;
-  LADSPA_Handle handle;
-  LADSPA_Data **buf;
-  int *offset;
-  value *vbuf;
-  int samples;
-} ladspa_instance;
-
-#define Instance_val(v) (*((ladspa_instance**)Data_custom_val(v)))
 
 static void finalize_instance(value inst)
 {
