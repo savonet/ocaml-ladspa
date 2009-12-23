@@ -48,9 +48,6 @@
 #include <ladspa.h>
 #include "ocaml_ladspa.h"
 
-#define Descr_val(v) ((LADSPA_Descriptor*)v)
-#define Val_descr(d) ((value)d)
-
 CAMLprim value ocaml_ladspa_version(value unit)
 {
   return caml_copy_string(LADSPA_VERSION);
@@ -98,46 +95,46 @@ CAMLprim value ocaml_ladspa_descriptor(value handle, value n)
   if (!d)
     caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_found"));
 
-  return Val_descr(d);
+  return Val_LADSPA_descr(d);
 }
 
 CAMLprim value ocaml_ladspa_unique_id(value d)
 {
-  return Val_int(Descr_val(d)->UniqueID);
+  return Val_int(LADSPA_descr_val(d)->UniqueID);
 }
 
 CAMLprim value ocaml_ladspa_label(value d)
 {
-  return caml_copy_string(Descr_val(d)->Label);
+  return caml_copy_string(LADSPA_descr_val(d)->Label);
 }
 
 CAMLprim value ocaml_ladspa_name(value d)
 {
-  return caml_copy_string(Descr_val(d)->Name);
+  return caml_copy_string(LADSPA_descr_val(d)->Name);
 }
 
 CAMLprim value ocaml_ladspa_maker(value d)
 {
-  return caml_copy_string(Descr_val(d)->Maker);
+  return caml_copy_string(LADSPA_descr_val(d)->Maker);
 }
 
 CAMLprim value ocaml_ladspa_copyright(value d)
 {
-  return caml_copy_string(Descr_val(d)->Copyright);
+  return caml_copy_string(LADSPA_descr_val(d)->Copyright);
 }
 
 CAMLprim value ocaml_ladspa_port_count(value d)
 {
-  return Val_int(Descr_val(d)->PortCount);
+  return Val_int(LADSPA_descr_val(d)->PortCount);
 }
 
 CAMLprim value ocaml_ladspa_port_names(value d)
 {
   CAMLparam1(d);
   CAMLlocal1(ans);
-  const char * const *pn = Descr_val(d)->PortNames;
+  const char * const *pn = LADSPA_descr_val(d)->PortNames;
   int i;
-  int n = Descr_val(d)->PortCount;
+  int n = LADSPA_descr_val(d)->PortCount;
 
   ans = caml_alloc_tuple(n);
   for (i = 0; i < n; i++)
@@ -148,37 +145,37 @@ CAMLprim value ocaml_ladspa_port_names(value d)
 
 CAMLprim value ocaml_ladspa_port_is_input(value d, value n)
 {
-  return Val_bool(LADSPA_IS_PORT_INPUT(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  return Val_bool(LADSPA_IS_PORT_INPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 }
 
 CAMLprim value ocaml_ladspa_port_is_output(value d, value n)
 {
-  return Val_bool(LADSPA_IS_PORT_OUTPUT(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  return Val_bool(LADSPA_IS_PORT_OUTPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 }
 
 CAMLprim value ocaml_ladspa_port_is_control(value d, value n)
 {
-  return Val_bool(LADSPA_IS_PORT_CONTROL(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  return Val_bool(LADSPA_IS_PORT_CONTROL(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 }
 
 CAMLprim value ocaml_ladspa_port_is_audio(value d, value n)
 {
-  return Val_bool(LADSPA_IS_PORT_AUDIO(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  return Val_bool(LADSPA_IS_PORT_AUDIO(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 }
 
 CAMLprim value ocaml_ladspa_port_is_integer(value d, value n)
 {
-  return Val_bool(LADSPA_IS_HINT_INTEGER(Descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  return Val_bool(LADSPA_IS_HINT_INTEGER(LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
 }
 
 CAMLprim value ocaml_ladspa_port_is_boolean(value d, value n)
 {
-  return Val_bool(LADSPA_IS_HINT_TOGGLED(Descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  return Val_bool(LADSPA_IS_HINT_TOGGLED(LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
 }
 
 CAMLprim value ocaml_ladspa_port_is_logarithmic(value d, value n)
 {
-  return Val_bool(LADSPA_IS_HINT_LOGARITHMIC(Descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  return Val_bool(LADSPA_IS_HINT_LOGARITHMIC(LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
 }
 
 CAMLprim value ocaml_ladspa_port_get_default(value d, value samplerate, value n)
@@ -186,9 +183,9 @@ CAMLprim value ocaml_ladspa_port_get_default(value d, value samplerate, value n)
   CAMLparam1(d);
   CAMLlocal1(ans);
 
-  assert(LADSPA_IS_PORT_CONTROL(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  assert(LADSPA_IS_PORT_CONTROL(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 
-  const LADSPA_PortRangeHint ri = Descr_val(d)->PortRangeHints[Int_val(n)];
+  const LADSPA_PortRangeHint ri = LADSPA_descr_val(d)->PortRangeHints[Int_val(n)];
   LADSPA_PortRangeHintDescriptor h = ri.HintDescriptor;
   float lower = ri.LowerBound;
   float upper = ri.UpperBound;
@@ -242,10 +239,10 @@ CAMLprim value ocaml_ladspa_port_get_min(value d, value samplerate, value n)
 {
   CAMLparam1(d);
   CAMLlocal1(ans);
-  const LADSPA_PortRangeHint ri = Descr_val(d)->PortRangeHints[Int_val(n)];
+  const LADSPA_PortRangeHint ri = LADSPA_descr_val(d)->PortRangeHints[Int_val(n)];
   LADSPA_Data bound;
 
-  assert(LADSPA_IS_PORT_CONTROL(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  assert(LADSPA_IS_PORT_CONTROL(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 
   if (!LADSPA_IS_HINT_BOUNDED_BELOW(ri.HintDescriptor))
     CAMLreturn(Val_int(0));
@@ -262,10 +259,10 @@ CAMLprim value ocaml_ladspa_port_get_max(value d, value samplerate, value n)
 {
   CAMLparam1(d);
   CAMLlocal1(ans);
-  const LADSPA_PortRangeHint ri = Descr_val(d)->PortRangeHints[Int_val(n)];
+  const LADSPA_PortRangeHint ri = LADSPA_descr_val(d)->PortRangeHints[Int_val(n)];
   LADSPA_Data bound;
 
-  assert(LADSPA_IS_PORT_CONTROL(Descr_val(d)->PortDescriptors[Int_val(n)]));
+  assert(LADSPA_IS_PORT_CONTROL(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
 
   if (!LADSPA_IS_HINT_BOUNDED_ABOVE(ri.HintDescriptor))
     CAMLreturn(Val_int(0));
@@ -316,7 +313,7 @@ CAMLprim value ocaml_ladspa_instantiate(value d, value rate, value samples)
   int ports;
   int i;
 
-  instance->descr = Descr_val(d);
+  instance->descr = LADSPA_descr_val(d);
   ports = instance->descr->PortCount;
   instance->handle = instance->descr->instantiate(instance->descr, Int_val(rate));
   instance->samples = Int_val(samples);
@@ -373,7 +370,7 @@ CAMLprim value ocaml_ladspa_get_descriptor(value i)
 {
   ladspa_instance* instance = Instance_val(i);
 
-  return Val_descr(instance->descr);
+  return Val_LADSPA_descr(instance->descr);
 }
 
 CAMLprim value ocaml_ladspa_connect_audio_port(value i, value _n, value a, value offs)
