@@ -144,6 +144,7 @@ struct
 
   external run : instance -> unit = "ocaml_ladspa_run"
 
+  external pre_run : instance -> unit = "ocaml_ladspa_pre_run"
   external post_run : instance -> unit = "ocaml_ladspa_post_run"
 end
 

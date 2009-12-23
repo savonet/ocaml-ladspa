@@ -418,6 +418,28 @@ CAMLprim value ocaml_ladspa_deactivate(value i)
   return Val_unit;
 }
 
+CAMLprim value ocaml_ladspa_pre_run(value inst)
+{
+  ladspa_instance* instance = Instance_val(inst);
+  int i, j;
+
+  for (i = 0; i < instance->descr->PortCount; i++)
+  {
+    if (LADSPA_IS_PORT_INPUT(instance->descr->PortDescriptors[i]))
+    {
+      if (!instance->vbuf[i])
+        caml_raise_with_arg(*caml_named_value("ocaml_ladspa_exn_input_port_not_connected"), Val_int(i));
+      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
+        instance->buf[i][0] = Double_val(Field(instance->vbuf[i], 0));
+      else
+        for (j = 0; j < instance->samples; j++)
+          instance->buf[i][j] = Double_field(instance->vbuf[i], j + instance->offset[i]);
+    }
+  }
+
+  return Val_unit;
+}
+
 CAMLprim value ocaml_ladspa_post_run(value inst)
 {
   ladspa_instance* instance = Instance_val(inst);
@@ -442,21 +464,8 @@ CAMLprim value ocaml_ladspa_run(value inst)
 {
   CAMLparam1(inst);
   ladspa_instance* instance = Instance_val(inst);
-  int i, j;
 
-  for (i = 0; i < instance->descr->PortCount; i++)
-  {
-    if (LADSPA_IS_PORT_INPUT(instance->descr->PortDescriptors[i]))
-    {
-      if (!instance->vbuf[i])
-        caml_raise_with_arg(*caml_named_value("ocaml_ladspa_exn_input_port_not_connected"), Val_int(i));
-      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-        instance->buf[i][0] = Double_val(Field(instance->vbuf[i], 0));
-      else
-        for (j = 0; j < instance->samples; j++)
-          instance->buf[i][j] = Double_field(instance->vbuf[i], j + instance->offset[i]);
-    }
-  }
+  ocaml_ladspa_pre_run(inst);
 
   caml_enter_blocking_section();
   instance->descr->run(instance->handle, instance->samples);

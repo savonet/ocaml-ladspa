@@ -160,5 +160,9 @@ sig
   (** Process samples. *)
   val run : instance -> unit
 
+  (** Internal function used by the DSSI binding. *)
+  val pre_run : instance -> unit
+
+  (** Internal function used by the DSSI binding. *)
   val post_run : instance -> unit
 end
