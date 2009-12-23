@@ -159,4 +159,6 @@ sig
 
   (** Process samples. *)
   val run : instance -> unit
+
+  val post_run : instance -> unit
 end

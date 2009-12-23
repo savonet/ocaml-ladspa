@@ -418,6 +418,26 @@ CAMLprim value ocaml_ladspa_deactivate(value i)
   return Val_unit;
 }
 
+CAMLprim value ocaml_ladspa_post_run(value inst)
+{
+  ladspa_instance* instance = Instance_val(inst);
+  int i, j;
+
+  for (i = 0; i < instance->descr->PortCount; i++)
+  {
+    if (LADSPA_IS_PORT_OUTPUT(instance->descr->PortDescriptors[i]) && instance->vbuf[i])
+    {
+      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
+        Store_field(instance->vbuf[i], 0, caml_copy_double(instance->buf[i][0]));
+      else
+        for (j = 0; j < instance->samples; j++)
+          Store_double_field(instance->vbuf[i], j + instance->offset[i], instance->buf[i][j]);
+    }
+  }
+
+  return Val_unit;
+}
+
 CAMLprim value ocaml_ladspa_run(value inst)
 {
   CAMLparam1(inst);
@@ -442,17 +462,7 @@ CAMLprim value ocaml_ladspa_run(value inst)
   instance->descr->run(instance->handle, instance->samples);
   caml_leave_blocking_section();
 
-  for (i = 0; i < instance->descr->PortCount; i++)
-  {
-    if (LADSPA_IS_PORT_OUTPUT(instance->descr->PortDescriptors[i]) && instance->vbuf[i])
-    {
-      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-        Store_field(instance->vbuf[i], 0, caml_copy_double(instance->buf[i][0]));
-      else
-        for (j = 0; j < instance->samples; j++)
-          Store_double_field(instance->vbuf[i], j + instance->offset[i], instance->buf[i][j]);
-    }
-  }
+  ocaml_ladspa_post_run(inst);
 
   CAMLreturn(Val_unit);
 }

@@ -143,6 +143,8 @@ struct
   exception Input_port_not_connected of int
 
   external run : instance -> unit = "ocaml_ladspa_run"
+
+  external post_run : instance -> unit = "ocaml_ladspa_post_run"
 end
 
 let () =
