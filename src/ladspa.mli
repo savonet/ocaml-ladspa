@@ -162,7 +162,8 @@ sig
 
   (** Internal function used by the DSSI binding. *)
   val pre_run : instance -> unit
-
   (** Internal function used by the DSSI binding. *)
   val post_run : instance -> unit
+  (** Internal function used by the DSSI binding. *)
+  val post_run_adding : instance -> unit
 end

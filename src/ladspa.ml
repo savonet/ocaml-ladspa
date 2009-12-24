@@ -146,6 +146,7 @@ struct
 
   external pre_run : instance -> unit = "ocaml_ladspa_pre_run"
   external post_run : instance -> unit = "ocaml_ladspa_post_run"
+  external post_run_adding : instance -> unit = "ocaml_ladspa_post_run_adding"
 end
 
 let () =
