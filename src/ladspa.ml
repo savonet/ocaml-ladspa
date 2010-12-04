@@ -82,6 +82,11 @@ struct
 
   external copyright : t -> string = "ocaml_ladspa_copyright"
 
+  let copyright d =
+    let c = copyright d in
+    (* "None" is the standard answer when there is no copyright. *)
+    if c = "None" then None else Some c
+
   external port_count : t -> int = "ocaml_ladspa_port_count"
 
   external port_names : t -> string array = "ocaml_ladspa_port_names"

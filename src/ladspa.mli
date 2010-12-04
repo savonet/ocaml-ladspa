@@ -91,12 +91,11 @@ sig
   (** String indicating the maker of the plugin. *)
   val maker : t -> string
 
-  (** String indicating any copyright applying to the plugin. If no Copyright
-    * applies the string "None" should be used. *)
-  val copyright : t -> string
+  (** String indicating any copyright applying to the plugin. *)
+  val copyright : t -> string option
 
   (** This indicates the number of ports (input AND output) present on the
-    * plugin. *)
+      plugin. *)
   val port_count : t -> int
 
   (** Name of the [n]-th port. *)
