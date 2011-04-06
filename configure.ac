@@ -17,6 +17,7 @@ AC_CHECK_OCAML_COMPILERS()
 
 AC_PROG_CC()
 AC_CHECK_TOOL([AR],[ar],no)
+AC_SUBST(AR)
 
 # LADSPA check
 AC_CHECK_HEADER(ladspa.h, [], [AC_MSG_ERROR([Cannot find ladspa.h, please 
