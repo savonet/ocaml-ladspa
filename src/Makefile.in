@@ -28,7 +28,7 @@ OCAMLLIBPATH = @CAMLLIBPATH@
 SOURCES = ladspa_stubs.c ladspa.mli ladspa.ml
 RESULT = ladspa
 OCAMLDOCFLAGS = -stars
-LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so)
+LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so) ocaml_ladspa.h
 INCDIRS =
 ACLIBS = @LIBS@
 CLIBS = $(ACLIBS:-l%=%)
