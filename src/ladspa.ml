@@ -1,5 +1,5 @@
 (*
- * Copyright 2007 Samuel Mimram
+ * Copyright 2007-2010 Samuel Mimram
  *
  * This file is part of ocaml-ladspa.
  *
