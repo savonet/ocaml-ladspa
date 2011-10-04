@@ -2,7 +2,8 @@ PROGNAME := ocaml-ladspa
 DISTFILES := @AUTOCONF_INSTALL_FILES@ CHANGES COPYING Makefile.in README \
 	bootstrap configure configure.ac  \
 	src/*.ml src/*.mli src/*.c src/*.h src/Makefile.in src/META.in \
-	src/OCamlMakefile 
+	src/OCamlMakefile \
+	examples/OCamlMakefile examples/*/Makefile examples/*/*.ml
 VERSION = @VERSION@
 
 all clean install uninstall:
