@@ -15,7 +15,7 @@ let () =
     (Descriptor.label d)
     (Descriptor.name d)
     (Descriptor.maker d)
-    (Descriptor.copyright d);
+    (match Descriptor.copyright d with Some c -> c | None -> "");
   Printf.printf "Found %d descriptors.\n%!" (Array.length (Descriptor.descriptors p));
   Printf.printf "Found %d ports:\n%!" (Descriptor.port_count d);
   for i = 0 to Descriptor.port_count d - 1 do

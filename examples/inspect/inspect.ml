@@ -51,7 +51,7 @@ let print_plugin pname =
                (Descriptor.label d)
                (Descriptor.name d)
                (Descriptor.maker d)
-               (Descriptor.copyright d);
+               (match Descriptor.copyright d with Some c -> c | None -> "");
              print_descr d
           )
           descr;
