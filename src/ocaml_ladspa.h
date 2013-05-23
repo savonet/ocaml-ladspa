@@ -32,6 +32,7 @@
  */
 
 #include <caml/mlvalues.h>
+#include <caml/misc.h>
 
 #include <ladspa.h>
 
