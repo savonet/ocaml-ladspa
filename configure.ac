@@ -13,6 +13,10 @@ install the LADSPA_SDK, or put ladspa.h somewhere it can be found]);])
 # substitutions to perform
 AC_SUBST(VERSION)
 
+case "$host" in
+   *-mingw*) LIBS="$LIBS dl";
+esac
+
 # Finally create the Makefile and samples
 AC_CONFIG_FILES([Makefile],[chmod a-w Makefile])
 AC_CONFIG_FILES([src/META])
