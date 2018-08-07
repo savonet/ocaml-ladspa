@@ -401,7 +401,7 @@ CAMLprim value ocaml_ladspa_connect_control_port(value i, value _n, value a)
 
   assert(LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[n]));
 
-  if (instance->vbuf[n] == (value)NULL) {
+  if (!instance->vbuf[n]) {
     instance->vbuf[n] = a;
     caml_register_generational_global_root(&instance->vbuf[n]);
   } else {
