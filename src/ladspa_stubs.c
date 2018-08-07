@@ -38,7 +38,7 @@
 #include <caml/fail.h>
 #include <caml/memory.h>
 #include <caml/mlvalues.h>
-#include <caml/signals.h>
+#include <caml/threads.h>
 
 #include <assert.h>
 #include <dlfcn.h>
@@ -285,7 +285,8 @@ static void finalize_instance(value inst)
   instance->descr->cleanup(instance->handle);
   for (i = 0; i < instance->descr->PortCount; i++)
   {
-    caml_remove_global_root(&instance->vbuf[i]);
+    if (instance->vbuf[i])
+      caml_remove_generational_global_root(&instance->vbuf[i]);
     free(instance->buf[i]);
   }
   free(instance->vbuf);
@@ -328,7 +329,6 @@ CAMLprim value ocaml_ladspa_instantiate(value d, value rate, value samples)
     else
       instance->buf[i] = malloc(instance->samples * sizeof(LADSPA_Data));
     instance->vbuf[i] = 0;
-    caml_register_global_root(&instance->vbuf[i]);
     instance->descr->connect_port(instance->handle, i, instance->buf[i]);
   }
 
@@ -380,7 +380,14 @@ CAMLprim value ocaml_ladspa_connect_audio_port(value i, value _n, value a, value
   int n = Int_val(_n);
 
   assert(LADSPA_IS_PORT_AUDIO(instance->descr->PortDescriptors[n]));
-  instance->vbuf[n] = a;
+   
+  if (!instance->vbuf[n]) {
+    instance->vbuf[n] = a;
+    caml_register_generational_global_root(&instance->vbuf[n]);
+  } else {
+    caml_modify_generational_global_root(&instance->vbuf[n],a);
+  }
+
   instance->offset[n] = Int_val(offs);
 
   CAMLreturn(Val_unit);
@@ -393,7 +400,13 @@ CAMLprim value ocaml_ladspa_connect_control_port(value i, value _n, value a)
   int n = Int_val(_n);
 
   assert(LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[n]));
-  instance->vbuf[n] = a;
+
+  if (instance->vbuf[n] == (value)NULL) {
+    instance->vbuf[n] = a;
+    caml_register_generational_global_root(&instance->vbuf[n]);
+  } else {
+    caml_modify_generational_global_root(&instance->vbuf[n],a);
+  }
 
   CAMLreturn(Val_unit);
 }
@@ -487,9 +500,9 @@ CAMLprim value ocaml_ladspa_run(value inst)
 
   ocaml_ladspa_pre_run(inst);
 
-  caml_enter_blocking_section();
+  caml_release_runtime_system();
   instance->descr->run(instance->handle, instance->samples);
-  caml_leave_blocking_section();
+  caml_acquire_runtime_system();
 
   ocaml_ladspa_post_run(inst);
 

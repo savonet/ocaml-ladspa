@@ -1,3 +1,7 @@
+0.1.6 ()
+=====
+* Use generational global roots for global OCaml values in C.
+
 0.1.5 (03-08-2015)
 =====
 * Dummy github release.
