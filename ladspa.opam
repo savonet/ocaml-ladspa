@@ -1,10 +1,11 @@
 opam-version: "2.0"
-version: "dev"
+name: "ladspa"
+version: "0.1.6"
 maintainer: "Romain Beauxis <toots@rastageeks.org>"
 authors: "The Savonet Team <savonet-users@lists.sourceforge.net>"
 homepage: "https://github.com/savonet/ocaml-ladspa"
 build: [
-  ["./bootstrap"]
+  ["./bootstrap"] {pinned}
   ["./configure" "--prefix" prefix] {os != "macos"}
   [
     "./configure"
@@ -14,13 +15,16 @@ build: [
     "--prefix"
     prefix
   ] {os = "macos"}
+  [make "clean"] {pinned}
   [make]
 ]
 install: [
   [make "install"]
 ]
-remove: ["ocamlfind" "remove" "ladspa"]
-depends: ["ocaml" "ocamlfind"]
+depends: [
+  "ocaml"
+  "ocamlfind" {build}
+]
 depexts: [
   ["ladspa-dev"] {os-distribution = "alpine"}
   ["ladspa-devel"] {os-distribution = "centos"}
@@ -34,9 +38,3 @@ depexts: [
 bug-reports: "https://github.com/savonet/ocaml-ladspa/issues"
 dev-repo: "git+https://github.com/savonet/ocaml-ladspa.git"
 synopsis: "Bindings for the LADSPA API which provides audio effects"
-flags: light-uninstall
-url {
-  src:
-    "https://github.com/savonet/ocaml-ladspa/releases/download/0.1.5/ocaml-ladspa-0.1.5.tar.gz"
-  checksum: "md5=ae66337eb15dbbf0f432016e79db7267"
-}
