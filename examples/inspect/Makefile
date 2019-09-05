@@ -1,7 +1,7 @@
 SOURCES=inspect.ml
 RESULT=inspect
 INCDIRS=../../src
-LIBS=unix ladspa
+LIBS=unix bigarray ladspa
 OCAMLMAKEFILE=../OCamlMakefile
 
 test: all

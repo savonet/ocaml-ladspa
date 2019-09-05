@@ -1,7 +1,7 @@
 SOURCES=amp.ml
 RESULT=amp
 INCDIRS=../../src
-LIBS=ladspa
+LIBS=bigarray ladspa
 OCAMLMAKEFILE=../OCamlMakefile
 
 test: all

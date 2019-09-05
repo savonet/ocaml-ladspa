@@ -28,7 +28,7 @@ let samples = Bigarray.Array1.create Bigarray.float32 Bigarray.c_layout samples_
 let inst = Descriptor.instantiate d 44100
 
 let () =
-  Descriptor.connect_constant_control_port inst 0 0.5;
+  Descriptor.set_control_port inst 0 0.5;
   Descriptor.connect_port inst 1 samples;
   Descriptor.connect_port inst 2 samples;
   Descriptor.activate inst;
