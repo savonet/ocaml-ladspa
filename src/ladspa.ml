@@ -128,7 +128,7 @@ struct
 
   external connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit = "ocaml_ladspa_connect_port"
 
-  let connect_constant_control_port i n v =
+  let set_control_port i n v =
     assert (port_is_control (get_descriptor i) n);
     let buf = Bigarray.Array1.create Bigarray.float32 Bigarray.c_layout 1 in
     buf.{0} <- v;

@@ -138,7 +138,7 @@ sig
       (the bigarray can be of length 1). *)
   val connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit
 
-  val connect_constant_control_port : instance -> int -> float -> unit
+  val set_control_port : instance -> int -> float -> unit
 
   (** Activate (i.e. initialize) a plugin. *)
   val activate : instance -> unit
