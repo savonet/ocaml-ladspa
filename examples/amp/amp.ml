@@ -23,16 +23,16 @@ let () =
   done
 
 let samples_len = 1024
-let samples = Array.make samples_len 0.
+let samples = Bigarray.Array1.create Bigarray.float32 Bigarray.c_layout samples_len
 
-let inst = Descriptor.instantiate d 44100 samples_len
+let inst = Descriptor.instantiate d 44100
 
 let () =
-  Descriptor.connect_control_port_in inst 0 0.5;
-  Descriptor.connect_audio_port inst 1 samples 0;
-  Descriptor.connect_audio_port inst 2 samples 0;
+  Descriptor.connect_constant_control_port inst 0 0.5;
+  Descriptor.connect_port inst 1 samples;
+  Descriptor.connect_port inst 2 samples;
   Descriptor.activate inst;
-  Descriptor.run inst;
+  Descriptor.run inst samples_len;
   Descriptor.deactivate inst
 
 let () =
