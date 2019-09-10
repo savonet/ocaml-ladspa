@@ -25,6 +25,9 @@ depends: [
   "ocaml"
   "ocamlfind" {build}
 ]
+conflicts: [
+  "liquidsoap" {< "1.5.0"}
+]
 depexts: [
   ["ladspa-dev"] {os-distribution = "alpine"}
   ["ladspa-devel"] {os-distribution = "centos"}
