@@ -124,35 +124,19 @@ struct
 
   external get_descriptor : instance -> t = "ocaml_ladspa_get_descriptor"
 
-  external instantiate : t -> int -> int -> instance = "ocaml_ladspa_instantiate"
+  external instantiate : t -> int -> instance = "ocaml_ladspa_instantiate"
 
-  external set_samples : instance -> int -> unit = "ocaml_ladspa_set_samples"
+  external connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit = "ocaml_ladspa_connect_port"
 
-  external connect_audio_port : instance -> int -> float array -> int -> unit = "ocaml_ladspa_connect_audio_port"
-
-  external connect_control_port : instance -> int -> float ref -> unit = "ocaml_ladspa_connect_control_port"
-
-  let connect_control_port_in i n v =
-    assert (port_is_input (get_descriptor i) n);
-    let v = ref v in
-      connect_control_port i n v
-
-  let connect_control_port_out i n v =
-    assert (port_is_output (get_descriptor i) n);
-    connect_control_port i n v
+  let set_control_port i n v =
+    assert (port_is_control (get_descriptor i) n);
+    let buf = Bigarray.Array1.create Bigarray.float32 Bigarray.c_layout 1 in
+    buf.{0} <- v;
+    connect_port i n buf
 
   external activate : instance -> unit = "ocaml_ladspa_activate"
 
   external deactivate : instance -> unit = "ocaml_ladspa_deactivate"
 
-  exception Input_port_not_connected of int
-
-  external run : instance -> unit = "ocaml_ladspa_run"
-
-  external pre_run : instance -> unit = "ocaml_ladspa_pre_run"
-  external post_run : instance -> unit = "ocaml_ladspa_post_run"
-  external post_run_adding : instance -> unit = "ocaml_ladspa_post_run_adding"
+  external run : instance -> int -> unit = "ocaml_ladspa_run"
 end
-
-let () =
-  Callback.register_exception "ocaml_ladspa_exn_input_port_not_connected" (Descriptor.Input_port_not_connected (-1))

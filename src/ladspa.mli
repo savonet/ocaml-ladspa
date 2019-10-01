@@ -129,23 +129,16 @@ sig
   (** Instance of a descriptor. *)
   type instance
 
-  (** [instantiate descr freq len] instantiates the descriptor [descr] with a
-    * sampling frequency [freq] indicating that [len] samples should be
-    * processed at each run. *)
-  val instantiate : t -> int -> int -> instance
+  (** [instantiate descr freq] instantiates the descriptor [descr] with a
+      sampling frequency [freq]. *)
+  val instantiate : t -> int -> instance
 
-  (** Change the number of samples that should be processed at each [run]. *)
-  val set_samples : instance -> int -> unit
+  (** [connect_audio_port inst p buf] connects the port [p] of instance [inst]
+      to the buffer [buf]. For control ports only the first value is relevant
+      (the bigarray can be of length 1). *)
+  val connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit
 
-  (** [connect_audio_port inst p buf ofs] connects the audio port [p] of
-    * instance [inst] to the buffer [buf] starting at position [ofs]. *)
-  val connect_audio_port : instance -> int -> float array -> int -> unit
-
-  (** Connect an input control port. *)
-  val connect_control_port_in : instance -> int -> float -> unit
-
-  (** Connect an output control port. *)
-  val connect_control_port_out : instance -> int -> float ref -> unit
+  val set_control_port : instance -> int -> float -> unit
 
   (** Activate (i.e. initialize) a plugin. *)
   val activate : instance -> unit
@@ -153,16 +146,7 @@ sig
   (** Deactivate a plugin. *)
   val deactivate : instance -> unit
 
-  (** An input port is not connected. *)
-  exception Input_port_not_connected of int
-
-  (** Process samples. *)
-  val run : instance -> unit
-
-  (** Internal function used by the DSSI binding. *)
-  val pre_run : instance -> unit
-  (** Internal function used by the DSSI binding. *)
-  val post_run : instance -> unit
-  (** Internal function used by the DSSI binding. *)
-  val post_run_adding : instance -> unit
+  (** Process a given number of samples (which should be smaller than all the
+      buffers given through [connect_port]. *)
+  val run : instance -> int -> unit
 end

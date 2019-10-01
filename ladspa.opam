@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ladspa"
-version: "0.1.6"
+version: "0.2.0"
 maintainer: "Romain Beauxis <toots@rastageeks.org>"
 authors: "The Savonet Team <savonet-users@lists.sourceforge.net>"
 homepage: "https://github.com/savonet/ocaml-ladspa"
@@ -24,6 +24,9 @@ install: [
 depends: [
   "ocaml"
   "ocamlfind" {build}
+]
+conflicts: [
+  "liquidsoap" {< "1.5.0"}
 ]
 depexts: [
   ["ladspa-dev"] {os-distribution = "alpine"}

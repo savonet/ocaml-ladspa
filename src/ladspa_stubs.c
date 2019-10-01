@@ -33,6 +33,7 @@
 
 
 #include <caml/alloc.h>
+#include <caml/bigarray.h>
 #include <caml/callback.h>
 #include <caml/custom.h>
 #include <caml/fail.h>
@@ -287,11 +288,8 @@ static void finalize_instance(value inst)
   {
     if (instance->vbuf[i])
       caml_remove_generational_global_root(&instance->vbuf[i]);
-    free(instance->buf[i]);
   }
   free(instance->vbuf);
-  free(instance->buf);
-  free(instance->offset);
   free(instance);
 }
 
@@ -306,9 +304,9 @@ static struct custom_operations instance_ops =
 };
 
 
-CAMLprim value ocaml_ladspa_instantiate(value d, value rate, value samples)
+CAMLprim value ocaml_ladspa_instantiate(value d, value rate)
 {
-  CAMLparam1(d);
+  CAMLparam2(d, rate);
   CAMLlocal1(ans);
   ladspa_instance* instance = malloc(sizeof(ladspa_instance));
   int ports;
@@ -317,53 +315,14 @@ CAMLprim value ocaml_ladspa_instantiate(value d, value rate, value samples)
   instance->descr = LADSPA_descr_val(d);
   ports = instance->descr->PortCount;
   instance->handle = instance->descr->instantiate(instance->descr, Int_val(rate));
-  instance->samples = Int_val(samples);
-  instance->offset = malloc(ports * sizeof(int));
-  instance->buf = malloc(ports * sizeof(LADSPA_Data*));
   instance->vbuf = malloc(ports * sizeof(value));
-  /* TODO: alloc less for control ports */
   for (i = 0; i < ports; i++)
-  {
-    if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-      instance->buf[i] = malloc(sizeof(LADSPA_Data));
-    else
-      instance->buf[i] = malloc(instance->samples * sizeof(LADSPA_Data));
     instance->vbuf[i] = 0;
-    instance->descr->connect_port(instance->handle, i, instance->buf[i]);
-  }
 
   ans = caml_alloc_custom(&instance_ops, sizeof(ladspa_instance*), 1, 0);
   Instance_val(ans) = instance;
 
   CAMLreturn(ans);
-}
-
-CAMLprim value ocaml_ladspa_set_samples(value inst, value _samples)
-{
-  ladspa_instance* instance = Instance_val(inst);
-  int ports = instance->descr->PortCount;
-  int samples = Int_val(_samples);
-  int i;
-
-  if (instance->samples == samples)
-    return Val_unit;
-
-  instance->samples = samples;
-
-  if (samples == 0)
-    return Val_unit;
-
-  for (i = 0; i < ports; i++)
-  {
-    if (LADSPA_IS_PORT_AUDIO(instance->descr->PortDescriptors[i]))
-    {
-      instance->buf[i] = realloc(instance->buf[i], instance->samples * sizeof(LADSPA_Data));
-      assert(instance->buf[i]);
-      instance->descr->connect_port(instance->handle, i, instance->buf[i]);
-    }
-  }
-
-  return Val_unit;
 }
 
 CAMLprim value ocaml_ladspa_get_descriptor(value i)
@@ -373,40 +332,20 @@ CAMLprim value ocaml_ladspa_get_descriptor(value i)
   return Val_LADSPA_descr(instance->descr);
 }
 
-CAMLprim value ocaml_ladspa_connect_audio_port(value i, value _n, value a, value offs)
+CAMLprim value ocaml_ladspa_connect_port(value i, value _n, value buf)
 {
-  CAMLparam2(i, a);
+  CAMLparam3(i, _n, buf);
   ladspa_instance* instance = Instance_val(i);
   int n = Int_val(_n);
-
-  assert(LADSPA_IS_PORT_AUDIO(instance->descr->PortDescriptors[n]));
    
-  if (!instance->vbuf[n]) {
-    instance->vbuf[n] = a;
-    caml_register_generational_global_root(&instance->vbuf[n]);
-  } else {
-    caml_modify_generational_global_root(&instance->vbuf[n],a);
-  }
-
-  instance->offset[n] = Int_val(offs);
-
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value ocaml_ladspa_connect_control_port(value i, value _n, value a)
-{
-  CAMLparam2(i, a);
-  ladspa_instance* instance = Instance_val(i);
-  int n = Int_val(_n);
-
-  assert(LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[n]));
-
-  if (!instance->vbuf[n]) {
-    instance->vbuf[n] = a;
-    caml_register_generational_global_root(&instance->vbuf[n]);
-  } else {
-    caml_modify_generational_global_root(&instance->vbuf[n],a);
-  }
+  if (!instance->vbuf[n])
+    {
+      instance->vbuf[n] = buf;
+      caml_register_generational_global_root(&instance->vbuf[n]);
+    }
+  else
+    caml_modify_generational_global_root(&instance->vbuf[n], buf);
+  instance->descr->connect_port(instance->handle, n, Caml_ba_data_val(buf));
 
   CAMLreturn(Val_unit);
 }
@@ -431,80 +370,15 @@ CAMLprim value ocaml_ladspa_deactivate(value i)
   return Val_unit;
 }
 
-CAMLprim value ocaml_ladspa_pre_run(value inst)
+CAMLprim value ocaml_ladspa_run(value inst, value _samples)
 {
+  CAMLparam2(inst, _samples);
   ladspa_instance* instance = Instance_val(inst);
-  int i, j;
-
-  for (i = 0; i < instance->descr->PortCount; i++)
-  {
-    if (LADSPA_IS_PORT_INPUT(instance->descr->PortDescriptors[i]))
-    {
-      if (!instance->vbuf[i])
-        caml_raise_with_arg(*caml_named_value("ocaml_ladspa_exn_input_port_not_connected"), Val_int(i));
-      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-        instance->buf[i][0] = Double_val(Field(instance->vbuf[i], 0));
-      else
-        for (j = 0; j < instance->samples; j++)
-          instance->buf[i][j] = Double_field(instance->vbuf[i], j + instance->offset[i]);
-    }
-  }
-
-  return Val_unit;
-}
-
-CAMLprim value ocaml_ladspa_post_run(value inst)
-{
-  ladspa_instance* instance = Instance_val(inst);
-  int i, j;
-
-  for (i = 0; i < instance->descr->PortCount; i++)
-  {
-    if (LADSPA_IS_PORT_OUTPUT(instance->descr->PortDescriptors[i]) && instance->vbuf[i])
-    {
-      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-        Store_field(instance->vbuf[i], 0, caml_copy_double(instance->buf[i][0]));
-      else
-        for (j = 0; j < instance->samples; j++)
-          Store_double_field(instance->vbuf[i], j + instance->offset[i], instance->buf[i][j]);
-    }
-  }
-
-  return Val_unit;
-}
-
-CAMLprim value ocaml_ladspa_post_run_adding(value inst)
-{
-  ladspa_instance* instance = Instance_val(inst);
-  int i, j;
-
-  for (i = 0; i < instance->descr->PortCount; i++)
-  {
-    if (LADSPA_IS_PORT_OUTPUT(instance->descr->PortDescriptors[i]) && instance->vbuf[i])
-    {
-      if (LADSPA_IS_PORT_CONTROL(instance->descr->PortDescriptors[i]))
-        Store_field(instance->vbuf[i], 0, caml_copy_double(instance->buf[i][0]));
-      else
-        for (j = 0; j < instance->samples; j++)
-          Store_double_field(instance->vbuf[i], j + instance->offset[i], Double_field(instance->vbuf[i],j) + instance->buf[i][j]);
-    }
-  }
-
-  return Val_unit;
-}
-
-CAMLprim value ocaml_ladspa_run(value inst)
-{
-  CAMLparam1(inst);
-  ladspa_instance* instance = Instance_val(inst);
-
-  ocaml_ladspa_pre_run(inst);
+  int samples = Int_val(_samples);
 
   caml_release_runtime_system();
-  instance->descr->run(instance->handle, instance->samples);
+  instance->descr->run(instance->handle, samples);
   caml_acquire_runtime_system();
-
-  ocaml_ladspa_post_run(inst);
 
   CAMLreturn(Val_unit);
 }
