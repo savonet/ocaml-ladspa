@@ -1,6 +1,7 @@
 open Ladspa
 
-let p = Plugin.load "/usr/lib/ladspa/sc4_1882.so"
+let p = try Plugin.load "/usr/lib/ladspa/sc4_1882x.so"
+  with Plugin.Not_a_plugin -> print_endline "Could not load plugin, exiting."; exit 0
 let d = Descriptor.descriptor p 0
 
 let print_port n =
