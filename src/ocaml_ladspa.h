@@ -34,7 +34,13 @@
 #include <caml/mlvalues.h>
 #include <caml/misc.h>
 
+#include "ocaml_ladspa_config.h"
+
+#ifdef HAS_LADSPA
 #include <ladspa.h>
+#else
+#include "ladspa.h"
+#endif
 
 typedef struct
 {

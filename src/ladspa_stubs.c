@@ -47,7 +47,14 @@
 #include <stdio.h>
 
 #include "ocaml_ladspa.h"
+
+#include "ocaml_ladspa_config.h"
+
+#ifdef HAS_LADSPA
 #include <ladspa.h>
+#else
+#include "ladspa.h"
+#endif
 
 CAMLprim value ocaml_ladspa_version(value unit) {
   return caml_copy_string(LADSPA_VERSION);
