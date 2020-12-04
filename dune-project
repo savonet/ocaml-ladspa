@@ -13,5 +13,6 @@
  (synopsis "Bindings for the LADSPA API which provides audio effects")
  (depends
   (dune (>= 2.0))
-  dune-configurator)
+  dune-configurator
+  conf-ladspa)
 )
