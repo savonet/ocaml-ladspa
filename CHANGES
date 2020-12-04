@@ -1,4 +1,4 @@
-0.2.0 (unreleased)
+0.2.0 (03-12-2020)
 =====
 * Use bigarrays for audio buffers.
 * Use generational global roots for global OCaml values in C.
