@@ -2,6 +2,7 @@
 =====
 * Use bigarrays for audio buffers.
 * Use generational global roots for global OCaml values in C.
+* Switch to dune
 
 0.1.5 (03-08-2015)
 =====
