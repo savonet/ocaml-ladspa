@@ -31,33 +31,26 @@
  *
  *)
 
-
-
-let () =
-  Callback.register_exception "ocaml_ladspa_exn_not_found" Not_found
+let () = Callback.register_exception "ocaml_ladspa_exn_not_found" Not_found
 
 external version : unit -> string = "ocaml_ladspa_version"
-
 external version_major : unit -> int = "ocaml_ladspa_version_major"
-
 external version_minor : unit -> int = "ocaml_ladspa_version_minor"
 
-module Plugin =
-struct
+module Plugin = struct
   type t
 
   exception Not_a_plugin
 
   external load : string -> t = "ocaml_ladspa_open"
-
   external unload : t -> unit = "ocaml_ladspa_close"
 end
 
 let () =
-  Callback.register_exception "ocaml_ladspa_exn_not_a_plugin" Plugin.Not_a_plugin
+  Callback.register_exception "ocaml_ladspa_exn_not_a_plugin"
+    Plugin.Not_a_plugin
 
-module Descriptor =
-struct
+module Descriptor = struct
   type t
 
   external descriptor : Plugin.t -> int -> t = "ocaml_ladspa_descriptor"
@@ -65,21 +58,16 @@ struct
   let rec descriptors p n =
     try
       let d = descriptor p n in
-      let dd = descriptors p (n+1) in
-        d::dd
-    with
-      | Not_found -> []
+      let dd = descriptors p (n + 1) in
+      d :: dd
+    with Not_found -> []
 
   let descriptors p = Array.of_list (descriptors p 0)
 
   external unique_id : t -> int = "ocaml_ladspa_unique_id"
-
   external label : t -> string = "ocaml_ladspa_label"
-
   external name : t -> string = "ocaml_ladspa_name"
-
   external maker : t -> string = "ocaml_ladspa_maker"
-
   external copyright : t -> string = "ocaml_ladspa_copyright"
 
   let copyright d =
@@ -88,45 +76,46 @@ struct
     if c = "None" then None else Some c
 
   external port_count : t -> int = "ocaml_ladspa_port_count"
-
   external port_names : t -> string array = "ocaml_ladspa_port_names"
 
-  let port_name d n =
-    (port_names d).(n)
+  let port_name d n = (port_names d).(n)
 
   external port_is_input : t -> int -> bool = "ocaml_ladspa_port_is_input"
-
   external port_is_output : t -> int -> bool = "ocaml_ladspa_port_is_output"
-
   external port_is_control : t -> int -> bool = "ocaml_ladspa_port_is_control"
-
   external port_is_audio : t -> int -> bool = "ocaml_ladspa_port_is_audio"
-
   external port_is_integer : t -> int -> bool = "ocaml_ladspa_port_is_integer"
-
   external port_is_boolean : t -> int -> bool = "ocaml_ladspa_port_is_boolean"
 
-  external port_is_logarithmic : t -> int -> bool = "ocaml_ladspa_port_is_logarithmic"
+  external port_is_logarithmic : t -> int -> bool
+    = "ocaml_ladspa_port_is_logarithmic"
 
-  external port_get_default : t -> int -> int -> float option = "ocaml_ladspa_port_get_default"
+  external port_get_default : t -> int -> int -> float option
+    = "ocaml_ladspa_port_get_default"
 
-  let port_get_default d ?(samplerate=44100) p = port_get_default d samplerate p
+  let port_get_default d ?(samplerate = 44100) p =
+    port_get_default d samplerate p
 
-  external port_get_min : t -> int -> int -> float option = "ocaml_ladspa_port_get_min"
+  external port_get_min : t -> int -> int -> float option
+    = "ocaml_ladspa_port_get_min"
 
-  let port_get_min d ?(samplerate=44100) p = port_get_min d samplerate p
+  let port_get_min d ?(samplerate = 44100) p = port_get_min d samplerate p
 
-  external port_get_max : t -> int -> int -> float option = "ocaml_ladspa_port_get_max"
+  external port_get_max : t -> int -> int -> float option
+    = "ocaml_ladspa_port_get_max"
 
-  let port_get_max d ?(samplerate=44100) p = port_get_max d samplerate p
+  let port_get_max d ?(samplerate = 44100) p = port_get_max d samplerate p
 
   type instance
 
   external get_descriptor : instance -> t = "ocaml_ladspa_get_descriptor"
-
   external instantiate : t -> int -> instance = "ocaml_ladspa_instantiate"
 
-  external connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit = "ocaml_ladspa_connect_port"
+  external connect_port :
+    instance ->
+    int ->
+    (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t ->
+    unit = "ocaml_ladspa_connect_port"
 
   let set_control_port i n v =
     assert (port_is_control (get_descriptor i) n);
@@ -135,8 +124,6 @@ struct
     connect_port i n buf
 
   external activate : instance -> unit = "ocaml_ladspa_activate"
-
   external deactivate : instance -> unit = "ocaml_ladspa_deactivate"
-
   external run : instance -> int -> unit = "ocaml_ladspa_run"
 end

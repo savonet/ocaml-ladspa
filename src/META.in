@@ -1,6 +1,0 @@
-name="ladspa"
-version="@VERSION@"
-description="OCaml bindings for LADSPA"
-requires=""
-archive(byte)="ladspa.cma"
-archive(native)="ladspa.cmxa"

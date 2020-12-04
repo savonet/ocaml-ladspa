@@ -1,0 +1,14 @@
+(library
+ (name ladspa)
+ (public_name ladspa)
+ (synopsis "OCaml bindings for ladspa")
+ (libraries unix)
+ (foreign_stubs
+  (language c)
+  (names ladspa_stubs)
+  (extra_deps config.h)))
+
+(rule
+ (targets config.h)
+ (action
+  (run ./config/discover.exe)))

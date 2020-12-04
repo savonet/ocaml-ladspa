@@ -47,8 +47,7 @@ val version_major : unit -> int
 val version_minor : unit -> int
 
 (** Plugins. *)
-module Plugin :
-sig
+module Plugin : sig
   (** A plugin. *)
   type t
 
@@ -63,8 +62,7 @@ sig
 end
 
 (** Descriptors. *)
-module Descriptor :
-sig
+module Descriptor : sig
   (** A descriptor. *)
   type t
 
@@ -114,16 +112,13 @@ sig
   val port_is_control : t -> int -> bool
 
   val port_is_integer : t -> int -> bool
-
   val port_is_boolean : t -> int -> bool
-
   val port_is_logarithmic : t -> int -> bool
 
   (** Get a sensible default value for a control port. *)
   val port_get_default : t -> ?samplerate:int -> int -> float option
 
   val port_get_min : t -> ?samplerate:int -> int -> float option
-
   val port_get_max : t -> ?samplerate:int -> int -> float option
 
   (** Instance of a descriptor. *)
@@ -136,7 +131,11 @@ sig
   (** [connect_audio_port inst p buf] connects the port [p] of instance [inst]
       to the buffer [buf]. For control ports only the first value is relevant
       (the bigarray can be of length 1). *)
-  val connect_port : instance -> int -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> unit
+  val connect_port :
+    instance ->
+    int ->
+    (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t ->
+    unit
 
   val set_control_port : instance -> int -> float -> unit
 
