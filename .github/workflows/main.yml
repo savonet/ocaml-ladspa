@@ -13,5 +13,5 @@ jobs:
       with:
         ocaml-version: ${{ matrix.ocaml-version }}
     - run: opam pin add -n .
-    - run: opam depext -yt taglib
+    - run: opam depext -yt ladspa
     - run: opam install -t .
