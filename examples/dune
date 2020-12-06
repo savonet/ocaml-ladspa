@@ -6,7 +6,7 @@
 (executable
  (name inspect)
  (modules inspect)
- (libraries ladspa))
+ (libraries unix ladspa))
 
 (executable
  (name sc4)
