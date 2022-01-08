@@ -1,3 +1,7 @@
+0.2.1 (07-01-2022)
+======
+* Get rid of naked pointers.
+
 0.2.0 (03-12-2020)
 =====
 * Use bigarrays for audio buffers.

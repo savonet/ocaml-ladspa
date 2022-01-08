@@ -44,7 +44,7 @@
 
 typedef struct
 {
-  LADSPA_Descriptor *descr;
+  const LADSPA_Descriptor *descr;
   LADSPA_Handle handle;
   LADSPA_Data *control_data;
   value *vbuf;
@@ -52,5 +52,10 @@ typedef struct
 
 #define Instance_val(v) (*((ladspa_instance**)Data_custom_val(v)))
 
-#define LADSPA_descr_val(v) ((LADSPA_Descriptor*)v)
-#define Val_LADSPA_descr(d) ((value)d)
+#define LADSPA_descr_val(v) (*((const LADSPA_Descriptor**)Data_abstract_val(v)))
+
+static inline value value_of_ladspa_descr(value ret, const LADSPA_Descriptor *d) {
+  ret = caml_alloc(1, Abstract_tag);
+  LADSPA_descr_val(ret) = d;
+  return ret;
+}

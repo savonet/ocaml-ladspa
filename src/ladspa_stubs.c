@@ -56,6 +56,14 @@
 #include "ladspa.h"
 #endif
 
+#define Descr_val(v) (*(void**)Data_abstract_val(v))
+
+static inline value value_of_descr(value ret, void *d) {
+  ret = caml_alloc(1, Abstract_tag);
+  Descr_val(ret) = d;
+  return ret;
+}
+
 CAMLprim value ocaml_ladspa_version(value unit) {
   return caml_copy_string(LADSPA_VERSION);
 }
@@ -69,6 +77,8 @@ CAMLprim value ocaml_ladspa_version_minor(value unit) {
 }
 
 CAMLprim value ocaml_ladspa_open(value fname) {
+  CAMLparam0();
+  CAMLlocal1(tmp);
   void *handle = dlopen(String_val(fname), RTLD_LAZY);
   LADSPA_Descriptor_Function ladspa_descriptor;
 
@@ -81,24 +91,26 @@ CAMLprim value ocaml_ladspa_open(value fname) {
     caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_a_plugin"));
   }
 
-  return (value)handle;
+  return value_of_descr(tmp, handle);
 }
 
 CAMLprim value ocaml_ladspa_close(value handle) {
-  dlclose((void *)handle);
+  dlclose(Descr_val(handle));
 
   return Val_unit;
 }
 
 CAMLprim value ocaml_ladspa_descriptor(value handle, value n) {
+  CAMLparam1(handle);
+  CAMLlocal1(ret);
   LADSPA_Descriptor_Function ladspa_descriptor =
-      (LADSPA_Descriptor_Function)dlsym((void *)handle, "ladspa_descriptor");
+      (LADSPA_Descriptor_Function)dlsym(Descr_val(handle), "ladspa_descriptor");
   const LADSPA_Descriptor *d = ladspa_descriptor(Int_val(n));
 
   if (!d)
     caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_found"));
 
-  return Val_LADSPA_descr(d);
+  CAMLreturn(value_of_ladspa_descr(ret, d));
 }
 
 CAMLprim value ocaml_ladspa_unique_id(value d) {
@@ -306,9 +318,11 @@ CAMLprim value ocaml_ladspa_instantiate(value d, value rate) {
 }
 
 CAMLprim value ocaml_ladspa_get_descriptor(value i) {
+  CAMLparam1(i);
+  CAMLlocal1(ret);
   ladspa_instance *instance = Instance_val(i);
 
-  return Val_LADSPA_descr(instance->descr);
+  CAMLreturn(value_of_ladspa_descr(ret, instance->descr));
 }
 
 CAMLprim value ocaml_ladspa_connect_port(value i, value _n, value buf) {
