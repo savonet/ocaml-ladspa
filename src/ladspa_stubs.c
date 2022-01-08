@@ -56,7 +56,7 @@
 #include "ladspa.h"
 #endif
 
-#define Descr_val(v) (*(void**)Data_abstract_val(v))
+#define Descr_val(v) (*(void **)Data_abstract_val(v))
 
 static inline value value_of_descr(value ret, void *d) {
   ret = caml_alloc(1, Abstract_tag);
@@ -206,31 +206,39 @@ CAMLprim value ocaml_ladspa_port_get_default(value d, value samplerate,
     upper *= Int_val(samplerate);
   }
 
-  if
-    LADSPA_IS_HINT_HAS_DEFAULT(h) {
-      if
-        LADSPA_IS_HINT_DEFAULT_MINIMUM(h)
+  if LADSPA_IS_HINT_HAS_DEFAULT (h) {
+    if LADSPA_IS_HINT_DEFAULT_MINIMUM (h)
       def = lower;
-      else if LADSPA_IS_HINT_DEFAULT_LOW(h) if LADSPA_IS_HINT_LOGARITHMIC(h)
-          def = exp(log(lower) * 0.75 + log(upper) * 0.25);
-      else def = lower * 0.75 + upper * 0.25;
-      else if LADSPA_IS_HINT_DEFAULT_MIDDLE(h) if LADSPA_IS_HINT_LOGARITHMIC(h)
-          def = exp(log(lower) * 0.5 + log(upper) * 0.5);
-      else def = lower * 0.5 + upper * 0.5;
-      else if LADSPA_IS_HINT_DEFAULT_HIGH(h) if LADSPA_IS_HINT_LOGARITHMIC(h)
-          def = exp(log(lower) * 0.25 + log(upper) * 0.75);
-      else def = lower * 0.25 + upper * 0.75;
-      else if LADSPA_IS_HINT_DEFAULT_MAXIMUM(h) def = upper;
-      else if LADSPA_IS_HINT_DEFAULT_0(h) def = 0;
-      else if LADSPA_IS_HINT_DEFAULT_1(h) def = 1;
-      else if LADSPA_IS_HINT_DEFAULT_100(h) def = 100;
-      else if LADSPA_IS_HINT_DEFAULT_440(h) def = 440;
+    else if LADSPA_IS_HINT_DEFAULT_LOW (h)
+      if LADSPA_IS_HINT_LOGARITHMIC (h)
+        def = exp(log(lower) * 0.75 + log(upper) * 0.25);
+      else
+        def = lower * 0.75 + upper * 0.25;
+    else if LADSPA_IS_HINT_DEFAULT_MIDDLE (h)
+      if LADSPA_IS_HINT_LOGARITHMIC (h)
+        def = exp(log(lower) * 0.5 + log(upper) * 0.5);
+      else
+        def = lower * 0.5 + upper * 0.5;
+    else if LADSPA_IS_HINT_DEFAULT_HIGH (h)
+      if LADSPA_IS_HINT_LOGARITHMIC (h)
+        def = exp(log(lower) * 0.25 + log(upper) * 0.75);
+      else
+        def = lower * 0.25 + upper * 0.75;
+    else if LADSPA_IS_HINT_DEFAULT_MAXIMUM (h)
+      def = upper;
+    else if LADSPA_IS_HINT_DEFAULT_0 (h)
+      def = 0;
+    else if LADSPA_IS_HINT_DEFAULT_1 (h)
+      def = 1;
+    else if LADSPA_IS_HINT_DEFAULT_100 (h)
+      def = 100;
+    else if LADSPA_IS_HINT_DEFAULT_440 (h)
+      def = 440;
 
-      ans = caml_alloc(1, 0);
-      Store_field(ans, 0, caml_copy_double(def));
-      CAMLreturn(ans);
-    }
-  else
+    ans = caml_alloc(1, 0);
+    Store_field(ans, 0, caml_copy_double(def));
+    CAMLreturn(ans);
+  } else
     CAMLreturn(Val_int(0));
 }
 

@@ -7,14 +7,14 @@ let plugins =
   else (
     let dir = Unix.opendir plugins_dir in
     let ans = ref [] in
-    ( try
-        while true do
-          let f = Unix.readdir dir in
-          if f <> "." && f <> ".." then ans := (plugins_dir ^ "/" ^ f) :: !ans
-        done
-      with End_of_file -> () );
+    (try
+       while true do
+         let f = Unix.readdir dir in
+         if f <> "." && f <> ".." then ans := (plugins_dir ^ "/" ^ f) :: !ans
+       done
+     with End_of_file -> ());
     Unix.closedir dir;
-    List.rev !ans )
+    List.rev !ans)
 
 let () = Printf.printf "LADSPA %s\n\n%!" (Ladspa.version ())
 
