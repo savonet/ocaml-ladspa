@@ -8,10 +8,14 @@ jobs:
         operating-system: [ubuntu-latest, macos-latest]
         ocaml-version: ['4.09.0']
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: avsm/setup-ocaml@master
       with:
         ocaml-version: ${{ matrix.ocaml-version }}
     - run: opam pin add -n .
-    - run: opam depext -yt ladspa
-    - run: opam install -t .
+    - name: Install dependencies
+      run: opam depext -yt ladspa
+    - name: Build
+      run: opam install -t .
+    - name: Run tests
+      run: $(MAKE) -C examples
