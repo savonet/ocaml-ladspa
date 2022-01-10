@@ -84,20 +84,22 @@ CAMLprim value ocaml_ladspa_open(value fname) {
 
   if (!handle)
     caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_a_plugin"));
+
   ladspa_descriptor =
       (LADSPA_Descriptor_Function)dlsym((void *)handle, "ladspa_descriptor");
+
   if (dlerror() != NULL || !ladspa_descriptor) {
     dlclose(handle);
     caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_a_plugin"));
   }
 
-  return value_of_descr(tmp, handle);
+  CAMLreturn(value_of_descr(tmp, handle));
 }
 
 CAMLprim value ocaml_ladspa_close(value handle) {
+  CAMLparam1(handle);
   dlclose(Descr_val(handle));
-
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_ladspa_descriptor(value handle, value n) {
@@ -114,27 +116,33 @@ CAMLprim value ocaml_ladspa_descriptor(value handle, value n) {
 }
 
 CAMLprim value ocaml_ladspa_unique_id(value d) {
-  return Val_int(LADSPA_descr_val(d)->UniqueID);
+  CAMLparam1(d);
+  CAMLreturn(Val_int(LADSPA_descr_val(d)->UniqueID));
 }
 
 CAMLprim value ocaml_ladspa_label(value d) {
-  return caml_copy_string(LADSPA_descr_val(d)->Label);
+  CAMLparam1(d);
+  CAMLreturn(caml_copy_string(LADSPA_descr_val(d)->Label));
 }
 
 CAMLprim value ocaml_ladspa_name(value d) {
-  return caml_copy_string(LADSPA_descr_val(d)->Name);
+  CAMLparam1(d);
+  CAMLreturn(caml_copy_string(LADSPA_descr_val(d)->Name));
 }
 
 CAMLprim value ocaml_ladspa_maker(value d) {
-  return caml_copy_string(LADSPA_descr_val(d)->Maker);
+  CAMLparam1(d);
+  CAMLreturn(caml_copy_string(LADSPA_descr_val(d)->Maker));
 }
 
 CAMLprim value ocaml_ladspa_copyright(value d) {
-  return caml_copy_string(LADSPA_descr_val(d)->Copyright);
+  CAMLparam1(d);
+  CAMLreturn(caml_copy_string(LADSPA_descr_val(d)->Copyright));
 }
 
 CAMLprim value ocaml_ladspa_port_count(value d) {
-  return Val_int(LADSPA_descr_val(d)->PortCount);
+  CAMLparam1(d);
+  CAMLreturn(Val_int(LADSPA_descr_val(d)->PortCount));
 }
 
 CAMLprim value ocaml_ladspa_port_names(value d) {
@@ -152,38 +160,45 @@ CAMLprim value ocaml_ladspa_port_names(value d) {
 }
 
 CAMLprim value ocaml_ladspa_port_is_input(value d, value n) {
-  return Val_bool(
-      LADSPA_IS_PORT_INPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(
+      LADSPA_IS_PORT_INPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)])));
 }
 
 CAMLprim value ocaml_ladspa_port_is_output(value d, value n) {
-  return Val_bool(
-      LADSPA_IS_PORT_OUTPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(
+      LADSPA_IS_PORT_OUTPUT(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)])));
 }
 
 CAMLprim value ocaml_ladspa_port_is_control(value d, value n) {
-  return Val_bool(
-      LADSPA_IS_PORT_CONTROL(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(LADSPA_IS_PORT_CONTROL(
+      LADSPA_descr_val(d)->PortDescriptors[Int_val(n)])));
 }
 
 CAMLprim value ocaml_ladspa_port_is_audio(value d, value n) {
-  return Val_bool(
-      LADSPA_IS_PORT_AUDIO(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)]));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(
+      LADSPA_IS_PORT_AUDIO(LADSPA_descr_val(d)->PortDescriptors[Int_val(n)])));
 }
 
 CAMLprim value ocaml_ladspa_port_is_integer(value d, value n) {
-  return Val_bool(LADSPA_IS_HINT_INTEGER(
-      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(LADSPA_IS_HINT_INTEGER(
+      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor)));
 }
 
 CAMLprim value ocaml_ladspa_port_is_boolean(value d, value n) {
-  return Val_bool(LADSPA_IS_HINT_TOGGLED(
-      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(LADSPA_IS_HINT_TOGGLED(
+      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor)));
 }
 
 CAMLprim value ocaml_ladspa_port_is_logarithmic(value d, value n) {
-  return Val_bool(LADSPA_IS_HINT_LOGARITHMIC(
-      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor));
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(LADSPA_IS_HINT_LOGARITHMIC(
+      LADSPA_descr_val(d)->PortRangeHints[Int_val(n)].HintDescriptor)));
 }
 
 CAMLprim value ocaml_ladspa_port_get_default(value d, value samplerate,
@@ -349,21 +364,23 @@ CAMLprim value ocaml_ladspa_connect_port(value i, value _n, value buf) {
 }
 
 CAMLprim value ocaml_ladspa_activate(value i) {
+  CAMLparam1(i);
   ladspa_instance *instance = Instance_val(i);
 
   if (instance->descr->activate)
     instance->descr->activate(instance->handle);
 
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_ladspa_deactivate(value i) {
+  CAMLparam1(i);
   ladspa_instance *instance = Instance_val(i);
 
   if (instance->descr->deactivate)
     instance->descr->deactivate(instance->handle);
 
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_ladspa_run(value inst, value _samples) {
