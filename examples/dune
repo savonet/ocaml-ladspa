@@ -12,3 +12,11 @@
  (name sc4)
  (modules sc4)
  (libraries ladspa))
+
+(rule
+ (alias runtest)
+ (action (run ./amp.exe)))
+
+(rule
+ (alias runtest)
+ (action (run ./inspect.exe)))
