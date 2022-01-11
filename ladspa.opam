@@ -10,6 +10,7 @@ bug-reports: "https://github.com/savonet/ocaml-ladspa/issues"
 depends: [
   "dune" {>= "2.8"}
   "dune-configurator"
+  "ocaml" {>= "4.08"}
   "conf-ladspa"
   "odoc" {with-doc}
 ]

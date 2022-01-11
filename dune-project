@@ -15,5 +15,6 @@
  (depends
   dune
   dune-configurator
+  (ocaml (>= 4.08))
   conf-ladspa)
 )
