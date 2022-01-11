@@ -15,8 +15,5 @@
 
 (rule
  (alias runtest)
- (action (run ./amp.exe)))
-
-(rule
- (alias runtest)
+ (enabled_if (= %{system} linux))
  (action (run ./inspect.exe)))
