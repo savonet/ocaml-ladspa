@@ -5,6 +5,7 @@ let plugins_dir = "/usr/lib/ladspa"
 let plugins =
   if Array.length Sys.argv > 1 then [Sys.argv.(1)]
   else (
+    if Sys.file_exists  plugins_dir && Sys.is_directory plugins_dir then (
     let dir = Unix.opendir plugins_dir in
     let ans = ref [] in
     (try
@@ -14,7 +15,7 @@ let plugins =
        done
      with End_of_file -> ());
     Unix.closedir dir;
-    List.rev !ans)
+    List.rev !ans) else [])
 
 let () = Printf.printf "LADSPA %s\n\n%!" (Ladspa.version ())
 
