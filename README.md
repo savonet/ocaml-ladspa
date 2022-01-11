@@ -29,7 +29,7 @@ Installation
 Via `opam`:
 
 ```sh
-opam install gstreamer
+opam install ladspa
 ```
 
 Via `dune` (for developers):
