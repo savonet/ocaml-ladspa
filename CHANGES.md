@@ -1,3 +1,7 @@
+0.2.3 (unreleased)
+=====
+- Remove LGPL linking exception (#3).
+
 0.2.2 (10-01-2022)
 =====
 * Fix GC issues introduced in previous release.
