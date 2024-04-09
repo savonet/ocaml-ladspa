@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR="$(dirname "$0")"
+export DIR
+
+dune exec --root="$DIR" ./inspect.exe -- $@
