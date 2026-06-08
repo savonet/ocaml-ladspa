@@ -1,47 +1,35 @@
-ocaml-ladspa
-============
+# ocaml-ladspa
 
-This package contains an OCaml interface for LADSPA audio plugins library.
+> [!WARNING]
+> This repository is read-only. All changes must be made in
+> [savonet/liquidsoap](https://github.com/savonet/liquidsoap) under
+> `src/modules/synced/ladspa/` and will be mirrored here automatically.
+
+OCaml bindings for [LADSPA](https://www.ladspa.org/) (Linux Audio Developer's Simple Plugin API).
 
 Please read the COPYING file before using this software.
 
-Prerequisites
--------------
+## Prerequisites
 
-- ocaml >= 3.0.6
-- LADSPA sdk >= 1.1
-- findlib >= 0.8.1
-- dune >= 2.0
+- OCaml >= 4.08
+- ladspa.h header (e.g. `apt install ladspa-sdk` or `brew install ladspa-sdk`)
+- dune >= 3.0
 
-Compilation
------------
-
-```sh
-dune build
-```
-
-This should build both the native and the byte-code version of the
-extension library.
-
-Installation
-------------
+## Installation
 
 Via `opam`:
 
-```sh
-opam install ladspa
+```
+$ opam install ladspa
 ```
 
-Via `dune` (for developers):
-```sh
-dune install
+## Building from source
+
+```
+$ dune build
+$ dune install
 ```
 
-This should install the library file (using ocamlfind) in the
-appropriate place.
+## Contact
 
-Author
-------
-
-This author of this software may be contacted by electronic mail at the
-following address: savonet-users@lists.sourceforge.net.
+savonet-users@lists.sourceforge.net
