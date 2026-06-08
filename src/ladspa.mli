@@ -72,15 +72,16 @@ module Descriptor : sig
   (** Retrieve all the descriptors of a plugin. *)
   val descriptors : Plugin.t -> t array
 
-  (** This numeric identifier indicates the plugin type uniquely. Plugin
-    * programmers may reserve ranges of IDs from a central body to avoid
-    * clashes. Hosts may assume that IDs are below 0x1000000. *)
+  (** This numeric identifier indicates the plugin type uniquely. Plugin *
+      programmers may reserve ranges of IDs from a central body to avoid *
+      clashes. Hosts may assume that IDs are below 0x1000000. *)
   val unique_id : t -> int
 
   (** This identifier can be used as a unique, case-sensitive identifier for the
-    * plugin type within the plugin file. Plugin types should be identified by
-    * file and label rather than by index or plugin name, which may be changed
-    * in new plugin versions. Labels must not contain white-space characters. *)
+      * plugin type within the plugin file. Plugin types should be identified by
+      * file and label rather than by index or plugin name, which may be changed
+      * in new plugin versions. Labels must not contain white-space characters.
+  *)
   val label : t -> string
 
   (** Name of the plugin (e.g. "Sine Oscillator"). *)

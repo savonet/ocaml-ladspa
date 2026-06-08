@@ -8,14 +8,13 @@ license: "LGPL-2.1"
 homepage: "https://github.com/savonet/ocaml-ladspa"
 bug-reports: "https://github.com/savonet/ocaml-ladspa/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "3.23"}
   "dune-configurator"
   "ocaml" {>= "4.08"}
   "conf-ladspa"
   "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {dev}
   [
     "dune"
     "build"
@@ -29,3 +28,4 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/savonet/ocaml-ladspa.git"
+x-maintenance-intent: ["(latest)"]

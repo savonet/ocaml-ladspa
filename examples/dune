@@ -15,4 +15,5 @@
 
 (rule
  (alias runtest)
- (action (run ./inspect.exe)))
+ (action
+  (run ./inspect.exe)))
